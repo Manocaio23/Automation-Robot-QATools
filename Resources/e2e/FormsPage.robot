@@ -1,11 +1,13 @@
 *** Settings ***
 Library  SeleniumLibrary
+Library    FakerLibrary
 
 *** Variables ***
+${CHROMEDRIVER_PATH}    ${EXECDIR}/chromedriver.exe
 #trocar no local que mouda de site
 ${site}  qa
 &{url}  qa=https://demoqa.com/  prod=http://ambienteproducao.com  test=https://www.ebay.com
-${browser}   chrome
+${browser}   Chrome
 ${qa}    https://demoqa.com/
 ${FORMS_BTN}    //body/div[@id='app']/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[3]
 ${PRATIC_BTN}    //span[contains(text(),'Practice Form')]
@@ -31,10 +33,12 @@ ${SELECT_NCR}     //div[contains(text(),'NCR')]
 ${SELECT_DELHI}        //div[contains(text(),'Delhi')]
 ${SUBMIT}    id:submit
 
+
 *** Keywords ***
 Start Test
-    Open Browser  ${qa}   ${browser}
+    Open Browser  ${qa}   ${browser}    ${CHROMEDRIVER_PATH} 
     Maximize Browser Window
+    Set Window Size    2000    1300
     
 
 Finish TestCase
@@ -104,6 +108,8 @@ E preencho "Current address" , "State and City"
     Sleep   1s
 
 Quando clico em submit
+    Sleep   2s
+    Wait Until Element Is Visible     ${SUBMIT}
     Click Button    ${SUBMIT}
     
 Então devo validar os campos corretamente 
@@ -125,3 +131,11 @@ Validar se os campos obrigatorios estao preenchidos
     Element Text Should Not Be  ${FIRSTNAME_INPUT}  valor 
     Element Text Should Not Be  ${LASTNAME_INPUT}  valor
    
+Gerar Nomes aleatorios
+   ${PRIMEIROFAKER_INPUT}    FakerLibrary.First Name
+  ${ULTIMOFAKER_INPUT}     FakerLibrary.Last Name
+  ${EMAILFAKER_INPUT}         FakerLibrary.Email
+  Input Text    ${FIRSTNAME_INPUT}    ${PRIMEIROFAKER_INPUT} 
+  Input Text  ${LASTNAME_INPUT}     ${ULTIMOFAKER_INPUT}  
+  Input Text  ${EMAIL_INPUT}         ${EMAILFAKER_INPUT} 
+    Sleep   3s
